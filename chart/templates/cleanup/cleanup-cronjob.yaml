@@ -34,7 +34,7 @@ metadata:
   labels:
     tier: airflow
     component: airflow-cleanup-pods
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     {{- with .Values.labels }}
@@ -67,6 +67,8 @@ spec:
             {{- end }}
           annotations:
             sidecar.istio.io/inject: "false"
+            checksum/airflow-config: {{ include (print $.Template.BasePath "/configmaps/configmap.yaml") . | sha256sum }}
+            checksum/extra-configmaps: {{ include (print $.Template.BasePath "/configmaps/extra-configmaps.yaml") . | sha256sum }}
             {{- if .Values.airflowPodAnnotations }}
               {{- toYaml .Values.airflowPodAnnotations | nindent 12 }}
             {{- end }}
@@ -105,9 +107,16 @@ spec:
               env:
                 {{- include "standard_airflow_environment" . | indent 12 }}
                 {{- include "container_extra_envs" (list . .Values.cleanup.env) | indent 12 }}
-              volumeMounts: {{- include "airflow_config_mount" . | nindent 16 }}
+              volumeMounts:
+                {{- include "airflow_config_mount" . | nindent 16 }}
+                {{- if .Values.extraConfigMapsMounts }}
+                  {{- include "airflow_extra_configmaps_volume_mount" . | nindent 16 }}
+                {{- end }}
               resources: {{- toYaml .Values.cleanup.resources | nindent 16 }}
           volumes:
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_mount" . | nindent 12 }}
+            {{- end }}
             - name: config
               configMap:
                 name: {{ template "airflow_config" . }}

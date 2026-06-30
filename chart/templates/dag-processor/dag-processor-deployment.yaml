@@ -40,7 +40,7 @@ metadata:
     tier: airflow
     component: dag-processor
     release: {{ .Release.Name }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     heritage: {{ .Release.Service }}
     {{- with .Values.labels }}
       {{- toYaml . | nindent 4 }}
@@ -131,8 +131,15 @@ spec:
               {{- tpl (toYaml .Values.dagProcessor.extraVolumeMounts) . | nindent 12 }}
             {{- end }}
             {{- include "airflow_config_mount" . | nindent 12 }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
           args: {{- include "wait-for-migrations-command" . | indent 10 }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.dagProcessor.envFrom }}
+          envFrom: {{- toYaml .Values.dagProcessor.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             {{- include "custom_airflow_environment" . | indent 10 }}
             {{- include "standard_airflow_environment" . | indent 10 }}
@@ -171,10 +178,17 @@ spec:
             - name: logs
               mountPath: {{ template "airflow_logs" . }}
             {{- include "airflow_config_mount" . | nindent 12 }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
             {{- if or .Values.dags.persistence.enabled .Values.dags.gitSync.enabled }}
               {{- include "airflow_dags_mount" . | nindent 12 }}
             {{- end }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.dagProcessor.envFrom }}
+          envFrom: {{- toYaml .Values.dagProcessor.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             {{- include "custom_airflow_environment" . | indent 10 }}
             {{- include "standard_airflow_environment" . | indent 10 }}
@@ -222,6 +236,9 @@ spec:
             {{- if .Values.dagProcessor.extraVolumeMounts }}
               {{- tpl (toYaml .Values.dagProcessor.extraVolumeMounts) . | nindent 12 }}
             {{- end }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
             {{- if or .Values.webserver.webserverConfig .Values.webserver.webserverConfigConfigMapName }}
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
@@ -230,6 +247,9 @@ spec:
           {{- tpl (toYaml .Values.dagProcessor.extraContainers) . | nindent 8 }}
         {{- end }}
       volumes:
+        {{- if .Values.extraConfigMapsMounts }}
+          {{- include "airflow_extra_configmaps_mount" . | nindent 8 }}
+        {{- end }}
         - name: config
           configMap:
             name: {{ template "airflow_config" . }}
