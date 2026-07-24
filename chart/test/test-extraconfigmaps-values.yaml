@@ -1,0 +1,227 @@
+# ============================================================================
+# Test values for extraConfigMaps and extraConfigMapsMounts
+# Exercises all features: extraConfigMaps creation + per-component mounts
+# ============================================================================
+
+releaseName: airflow-test
+environment: test
+
+# ============================================================================
+# extraConfigMaps — create K8s ConfigMaps from values
+# These are the source data that get mounted via extraConfigMapsMounts
+# ============================================================================
+extraConfigMaps:
+  # ConfigMap with Airflow variables for DAGs to consume
+  airflow-variables:
+    labels:
+      my.custom.label/test: "test_value"
+    data: |
+      AIRFLOW_VAR_TEST_MESSAGE: "Hello from test ConfigMap"
+      AIRFLOW_VAR_APP_ENV: "test"
+      AIRFLOW_VAR_DATASET_PATH: "/data/test"
+
+  # ConfigMap with DAG-specific Python modules
+  dag-config:
+    labels:
+      app.kubernetes.io/component: dags
+    data:
+      dag_settings.py: |
+        # DAG settings for test environment
+        DAG_DEFAULT_ARGS = {
+            'owner': 'test-team',
+            'retries': 3,
+            'email': ['test@example.com'],
+        }
+      connections_overrides.py: |
+        # Test-specific connection overrides
+        TEST_CONNECTION = "postgresql://test:test@test-db:5432/testdb"
+
+  # ConfigMap with custom Python libraries
+  python-libs:
+    data:
+      custom_utils.py: |
+        def test_util():
+            return "test utils loaded"
+
+# ============================================================================
+# Workers — mount extra configs selectively
+# ============================================================================
+workers:
+  extraConfigMapsMounts:
+    - name: airflow-test-airflow-variables
+      mountPath: /opt/airflow/config/variables
+    - name: airflow-test-dag-config
+      mountPath: /opt/airflow/config/dag_settings
+      subPath: dag_settings.py
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  image:
+    repository: apache/airflow
+    tag: "2.10.5"
+  nodeSelector:
+    cloud.google.com/gke-nodepool: test-nodepool
+  tolerations:
+    - key: "workload"
+      operator: "Equal"
+      value: "airflow"
+      effect: "NoSchedule"
+
+# ============================================================================
+# Scheduler — mount airflow variables only
+# ============================================================================
+scheduler:
+  extraConfigMapsMounts:
+    - name: airflow-test-airflow-variables
+      mountPath: /opt/airflow/config/variables
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  image:
+    repository: apache/airflow
+    tag: "2.10.5"
+
+# ============================================================================
+# Triggerer — mount variables + dag settings (same as workers)
+# ============================================================================
+triggerer:
+  extraConfigMapsMounts:
+    - name: airflow-test-airflow-variables
+      mountPath: /opt/airflow/config/variables
+    - name: airflow-test-dag-config
+      mountPath: /opt/airflow/config/dag_settings
+      subPath: dag_settings.py
+  image:
+    repository: apache/airflow
+    tag: "2.10.5"
+
+# ============================================================================
+# DAG Processor — mount Python libs only
+# ============================================================================
+dagProcessor:
+  extraConfigMapsMounts:
+    - name: airflow-test-python-libs
+      mountPath: /opt/airflow/config/python_libs
+      subPath: custom_utils.py
+  image:
+    repository: apache/airflow
+    tag: "2.10.5"
+
+# ============================================================================
+# Webserver — mount all three (demonstrates selective mounting)
+# ============================================================================
+webserver:
+  extraConfigMapsMounts:
+    - name: airflow-test-airflow-variables
+      mountPath: /opt/airflow/config/variables
+    - name: airflow-test-dag-config
+      mountPath: /opt/airflow/config/dag_settings
+      subPath: dag_settings.py
+    - name: airflow-test-python-libs
+      mountPath: /opt/airflow/config/python_libs
+      subPath: custom_utils.py
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  image:
+    repository: apache/airflow
+    tag: "2.10.5"
+
+# ============================================================================
+# Flower — mount DAG config only
+# ============================================================================
+flower:
+  enabled: true
+  extraConfigMapsMounts:
+    - name: airflow-test-dag-config
+      mountPath: /opt/airflow/config/dag_settings
+      subPath: dag_settings.py
+  image:
+    repository: apache/airflow
+    tag: "2.10.5"
+
+# ============================================================================
+# Cleanup CronJob — mount variables only
+# ============================================================================
+cleanup:
+  enabled: true
+  extraConfigMapsMounts:
+    - name: airflow-test-airflow-variables
+      mountPath: /opt/airflow/config/variables
+
+# ============================================================================
+# Create User Job — no extraConfigMaps (empty list — should render nothing)
+# ============================================================================
+createUserJob:
+  enabled: true
+  extraConfigMapsMounts: []
+
+# ============================================================================
+# Migrate Database Job — no extraConfigMaps (empty list — should render nothing)
+# ============================================================================
+migrateDatabaseJob:
+  enabled: true
+  extraConfigMapsMounts: []
+
+# ============================================================================
+# RPC Server — mount Python libs only
+# ============================================================================
+_rpcServer:
+  extraConfigMapsMounts:
+    - name: airflow-test-python-libs
+      mountPath: /opt/airflow/config/python_libs
+      subPath: custom_utils.py
+  image:
+    repository: apache/airflow
+    tag: "2.10.5"
+
+# ============================================================================
+# Basic service settings
+# ============================================================================
+createUser:
+  enabled: true
+
+migrateDatabase:
+  enabled: true
+
+airflow:
+  config:
+    core:
+      sql_alchemy_conn: postgresql+psycopg2://airflow:airflow@localhost:5432/airflow
+
+images:
+  airflow:
+    repository: apache/airflow
+    tag: "2.10.5"
+
+# Disable persistence for quick testing
+dags:
+  persistence:
+    enabled: false
+  gitSync:
+    enabled: false
+
+logs:
+  persistence:
+    enabled: false
+
+# RBAC
+rbac:
+  create: true
+
+# Service Account
+serviceAccount:
+  create: true
+  name: airflow

@@ -8565,6 +8565,29 @@
                                 }
                             ],
                             "$ref": "#/definitions/io.k8s.api.core.v1.ResourceRequirements"
+                        },
+                        "extraConfigMapsMounts": {
+                            "description": "Mount extra ConfigMaps into gitSync.",
+                            "type": "array",
+                            "default": [],
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "mountPath": {
+                                        "type": "string"
+                                    },
+                                    "subPath": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "mountPath"
+                                ]
+                            }
                         }
                     }
                 }
@@ -8623,6 +8646,37 @@
                     "$ref": "#/definitions/io.k8s.api.core.v1.EmptyDirVolumeSource",
                     "default": null
                 }
+            }
+        },
+        "extraConfigMapsMounts": {
+            "description": "ConfigMapsMounts for all airflow containers. Each entry mounts a ConfigMap by name to a specific path. The ConfigMap must be defined in .Values.extraConfigMaps.",
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "The name of the ConfigMap to mount"
+                    },
+                    "mountPath": {
+                        "type": "string",
+                        "description": "The path to mount the ConfigMap at"
+                    },
+                    "readOnly": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Whether the mount is read-only"
+                    },
+                    "subPath": {
+                        "type": "string",
+                        "description": "If set, mount a specific file from the ConfigMap"
+                    }
+                },
+                "required": [
+                    "name",
+                    "mountPath"
+                ]
             }
         }
     },

@@ -131,6 +131,9 @@ spec:
               {{- tpl (toYaml .Values.dagProcessor.extraVolumeMounts) . | nindent 12 }}
             {{- end }}
             {{- include "airflow_config_mount" . | nindent 12 }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
           args: {{- include "wait-for-migrations-command" . | indent 10 }}
           envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
           env:
@@ -171,6 +174,9 @@ spec:
             - name: logs
               mountPath: {{ template "airflow_logs" . }}
             {{- include "airflow_config_mount" . | nindent 12 }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
             {{- if or .Values.dags.persistence.enabled .Values.dags.gitSync.enabled }}
               {{- include "airflow_dags_mount" . | nindent 12 }}
             {{- end }}
@@ -222,6 +228,9 @@ spec:
             {{- if .Values.dagProcessor.extraVolumeMounts }}
               {{- tpl (toYaml .Values.dagProcessor.extraVolumeMounts) . | nindent 12 }}
             {{- end }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
             {{- if or .Values.webserver.webserverConfig .Values.webserver.webserverConfigConfigMapName }}
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
@@ -230,6 +239,9 @@ spec:
           {{- tpl (toYaml .Values.dagProcessor.extraContainers) . | nindent 8 }}
         {{- end }}
       volumes:
+        {{- if .Values.extraConfigMapsMounts }}
+          {{- include "airflow_extra_configmaps_mount" . | nindent 8 }}
+        {{- end }}
         - name: config
           configMap:
             name: {{ template "airflow_config" . }}

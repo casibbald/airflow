@@ -597,6 +597,31 @@ server_tls_key_file = /etc/pgbouncer/server.key
   {{- end }}
 {{- end }}
 
+{{- define "airflow_extra_configmaps_mount" -}}
+{{- range .Values.extraConfigMapsMounts }}
+- name: {{ .name | quote }}
+  configMap:
+    name: {{ .name | quote }}
+    {{- if .defaultMode }}
+    defaultMode: {{ .defaultMode }}
+    {{- end }}
+    {{- if .optional }}
+    optional: {{ .optional }}
+    {{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "airflow_extra_configmaps_volume_mount" -}}
+{{- range .Values.extraConfigMapsMounts }}
+- name: {{ .name | quote }}
+  mountPath: {{ .mountPath | quote }}
+  readOnly: {{ .readOnly | default true }}
+  {{- if .subPath }}
+  subPath: {{ .subPath | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}
+
 {{/* Create the name of the webserver service account to use */}}
 {{- define "webserver.serviceAccountName" -}}
   {{- if .Values.webserver.serviceAccount.create }}

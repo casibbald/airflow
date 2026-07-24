@@ -141,6 +141,9 @@ spec:
           securityContext: {{ $containerSecurityContextWaitForMigrations | nindent 12 }}
           volumeMounts:
             {{- include "airflow_config_mount" . | nindent 12 }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
             {{- if .Values.volumeMounts }}
               {{- toYaml .Values.volumeMounts | nindent 12 }}
             {{- end }}
@@ -190,6 +193,9 @@ spec:
             - name: logs
               mountPath: {{ template "airflow_logs" . }}
             {{- include "airflow_config_mount" . | nindent 12 }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
             {{- if or .Values.webserver.webserverConfig .Values.webserver.webserverConfigConfigMapName }}
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
@@ -253,6 +259,9 @@ spec:
             {{- if .Values.triggerer.extraVolumeMounts }}
               {{- tpl (toYaml .Values.triggerer.extraVolumeMounts) . | nindent 12 }}
             {{- end }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
             {{- if or .Values.webserver.webserverConfig .Values.webserver.webserverConfigConfigMapName }}
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
@@ -261,6 +270,9 @@ spec:
           {{- tpl (toYaml .Values.triggerer.extraContainers) . | nindent 8 }}
         {{- end }}
       volumes:
+        {{- if .Values.extraConfigMapsMounts }}
+          {{- include "airflow_extra_configmaps_mount" . | nindent 8 }}
+        {{- end }}
         - name: config
           configMap:
             name: {{ template "airflow_config" . }}

@@ -285,6 +285,18 @@ volumes: []
 # VolumeMounts for all airflow containers
 volumeMounts: []
 
+# ConfigMapsMounts for all airflow containers
+# Each entry mounts a ConfigMap by name to a specific path.
+# The ConfigMap must be defined in .Values.extraConfigMaps.
+# eg:
+#   - name: airflow-variables
+#     mountPath: /opt/airflow/config/variables
+#     readOnly: true
+#   - name: airflow-local-settings
+#     mountPath: /opt/airflow/config/airflow_local_settings.py
+#     subPath: airflow_local_settings.py
+extraConfigMapsMounts: []
+
 # Secrets for all airflow containers
 secret: []
 # - envName: ""
