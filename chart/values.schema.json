@@ -2245,6 +2245,52 @@
                             }
                         }
                     ]
+                },
+                "envFrom": {
+                    "description": "Extra envFrom 'items' that will be added to the definition of airflow containers",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "configMapRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the ConfigMap"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            },
+                            "secretRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the Secret"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            }
+                        },
+                        "oneOf": [
+                            {
+                                "required": [
+                                    "configMapRef"
+                                ]
+                            },
+                            {
+                                "required": [
+                                    "secretRef"
+                                ]
+                            }
+                        ]
+                    }
                 }
             }
         },
@@ -2794,6 +2840,52 @@
                             }
                         ],
                         "additionalProperties": false
+                    }
+                },
+                "envFrom": {
+                    "description": "Extra envFrom 'items' that will be added to the definition of airflow containers",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "configMapRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the ConfigMap"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            },
+                            "secretRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the Secret"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            }
+                        },
+                        "oneOf": [
+                            {
+                                "required": [
+                                    "configMapRef"
+                                ]
+                            },
+                            {
+                                "required": [
+                                    "secretRef"
+                                ]
+                            }
+                        ]
                     }
                 }
             }
@@ -3377,6 +3469,52 @@
                             "default": false
                         }
                     }
+                },
+                "envFrom": {
+                    "description": "Extra envFrom 'items' that will be added to the definition of airflow containers",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "configMapRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the ConfigMap"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            },
+                            "secretRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the Secret"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            }
+                        },
+                        "oneOf": [
+                            {
+                                "required": [
+                                    "configMapRef"
+                                ]
+                            },
+                            {
+                                "required": [
+                                    "secretRef"
+                                ]
+                            }
+                        ]
+                    }
                 }
             }
         },
@@ -3830,6 +3968,52 @@
                         ],
                         "additionalProperties": false
                     }
+                },
+                "envFrom": {
+                    "description": "Extra envFrom 'items' that will be added to the definition of airflow containers",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "configMapRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the ConfigMap"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            },
+                            "secretRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the Secret"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            }
+                        },
+                        "oneOf": [
+                            {
+                                "required": [
+                                    "configMapRef"
+                                ]
+                            },
+                            {
+                                "required": [
+                                    "secretRef"
+                                ]
+                            }
+                        ]
+                    }
                 }
             }
         },
@@ -4179,6 +4363,52 @@
                         ],
                         "additionalProperties": false
                     }
+                },
+                "envFrom": {
+                    "description": "Extra envFrom 'items' that will be added to the definition of airflow containers",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "configMapRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the ConfigMap"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            },
+                            "secretRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the Secret"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            }
+                        },
+                        "oneOf": [
+                            {
+                                "required": [
+                                    "configMapRef"
+                                ]
+                            },
+                            {
+                                "required": [
+                                    "secretRef"
+                                ]
+                            }
+                        ]
+                    }
                 }
             }
         },
@@ -4462,6 +4692,52 @@
                         "null"
                     ],
                     "default": 300
+                },
+                "envFrom": {
+                    "description": "Extra envFrom 'items' that will be added to the definition of airflow containers",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "configMapRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the ConfigMap"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            },
+                            "secretRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the Secret"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            }
+                        },
+                        "oneOf": [
+                            {
+                                "required": [
+                                    "configMapRef"
+                                ]
+                            },
+                            {
+                                "required": [
+                                    "secretRef"
+                                ]
+                            }
+                        ]
+                    }
                 }
             }
         },
@@ -5951,6 +6227,52 @@
                             }
                         ],
                         "additionalProperties": false
+                    }
+                },
+                "envFrom": {
+                    "description": "Extra envFrom 'items' that will be added to the definition of airflow containers",
+                    "type": "array",
+                    "default": [],
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "configMapRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the ConfigMap"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            },
+                            "secretRef": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the Secret"
+                                    }
+                                },
+                                "required": [
+                                    "name"
+                                ]
+                            }
+                        },
+                        "oneOf": [
+                            {
+                                "required": [
+                                    "configMapRef"
+                                ]
+                            },
+                            {
+                                "required": [
+                                    "secretRef"
+                                ]
+                            }
+                        ]
                     }
                 }
             }
@@ -8676,6 +8998,52 @@
                 "required": [
                     "name",
                     "mountPath"
+                ]
+            }
+        },
+        "envFrom": {
+            "description": "Extra envFrom 'items' that will be added to the definition of airflow containers",
+            "type": "array",
+            "default": [],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "configMapRef": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "The name of the ConfigMap"
+                            }
+                        },
+                        "required": [
+                            "name"
+                        ]
+                    },
+                    "secretRef": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "The name of the Secret"
+                            }
+                        },
+                        "required": [
+                            "name"
+                        ]
+                    }
+                },
+                "oneOf": [
+                    {
+                        "required": [
+                            "configMapRef"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "secretRef"
+                        ]
+                    }
                 ]
             }
         }

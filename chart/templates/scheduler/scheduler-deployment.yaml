@@ -163,7 +163,11 @@ spec:
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
           args: {{- include "wait-for-migrations-command" . | indent 10 }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.scheduler.envFrom }}
+          envFrom: {{- toYaml .Values.scheduler.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             {{- include "custom_airflow_environment" . | indent 10 }}
             {{- include "standard_airflow_environment" . | indent 10 }}
@@ -192,7 +196,11 @@ spec:
           {{- if .Values.scheduler.args }}
           args: {{ tpl (toYaml .Values.scheduler.args) . | nindent 12 }}
           {{- end }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.scheduler.envFrom }}
+          envFrom: {{- toYaml .Values.scheduler.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             {{- include "custom_airflow_environment" . | indent 10 }}
             {{- include "standard_airflow_environment" . | indent 10 }}

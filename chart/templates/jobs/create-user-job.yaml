@@ -111,7 +111,11 @@ spec:
           args: {{ tpl (toYaml .Values.createUserJob.args) . | nindent 12 }}
           {{- end }}
           {{- if .Values.createUserJob.applyCustomEnv }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.createUserJob.envFrom }}
+          envFrom: {{- toYaml .Values.createUserJob.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env: {{- include "custom_airflow_environment" . | indent 10 }}
           {{- else }}
           env:

@@ -510,6 +510,7 @@ kerberos:
 
 # Airflow Worker Config
 workers:
+  envFrom: []
   # Number of airflow celery workers in StatefulSet
   replicas: 1
   # Max number of old replicasets to retain
@@ -817,6 +818,7 @@ workers:
 
 # Airflow scheduler settings
 scheduler:
+  envFrom: []
   enabled: true
   #  hostAliases for the scheduler pod
   hostAliases: []
@@ -992,6 +994,7 @@ scheduler:
 
 # Airflow create user job settings
 createUserJob:
+  envFrom: []
   # Limit the lifetime of the job object after it finished execution.
   ttlSecondsAfterFinished: 300
   # Command to use when running the create user job (templated).
@@ -1097,6 +1100,7 @@ createUserJob:
 
 # Airflow database migration job settings
 migrateDatabaseJob:
+  envFrom: []
   enabled: true
   # Limit the lifetime of the job object after it finished execution.
   ttlSecondsAfterFinished: 300
@@ -1294,6 +1298,7 @@ _rpcServer:
 
 # Airflow webserver settings
 webserver:
+  envFrom: []
   enabled: true
   # Add custom annotations to the webserver configmap
   configMapAnnotations: {}
@@ -1509,6 +1514,7 @@ webserver:
 
 # Airflow Triggerer Config
 triggerer:
+  envFrom: []
   enabled: true
   # Number of airflow triggerers in the deployment
   replicas: 1
@@ -1714,6 +1720,7 @@ triggerer:
 
 # Airflow Dag Processor Config
 dagProcessor:
+  envFrom: []
   enabled: false
   # Number of airflow dag processors in the deployment
   replicas: 1

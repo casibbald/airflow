@@ -187,7 +187,11 @@ spec:
             {{- if or .Values.webserver.webserverConfig .Values.webserver.webserverConfigConfigMapName }}
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.workers.envFrom }}
+          envFrom: {{- toYaml .Values.workers.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             - name: KRB5_CONFIG
               value:  {{ .Values.kerberos.configPath | quote }}
@@ -217,7 +221,11 @@ spec:
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
           args: {{- include "wait-for-migrations-command" . | indent 10 }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.workers.envFrom }}
+          envFrom: {{- toYaml .Values.workers.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             {{- include "custom_airflow_environment" . | indent 10 }}
             {{- include "standard_airflow_environment" . | indent 10 }}
@@ -297,7 +305,11 @@ spec:
             {{- if or .Values.webserver.webserverConfig .Values.webserver.webserverConfigConfigMapName }}
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.workers.envFrom }}
+          envFrom: {{- toYaml .Values.workers.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             # Only signal the main process, not the process group, to make Warm Shutdown work properly
             - name: DUMB_INIT_SETSID
@@ -389,7 +401,11 @@ spec:
             {{- if or .Values.webserver.webserverConfig .Values.webserver.webserverConfigConfigMapName }}
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.workers.envFrom }}
+          envFrom: {{- toYaml .Values.workers.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             - name: KRB5_CONFIG
               value:  {{ .Values.kerberos.configPath | quote }}

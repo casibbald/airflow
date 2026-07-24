@@ -135,7 +135,11 @@ spec:
               {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
             {{- end }}
           args: {{- include "wait-for-migrations-command" . | indent 10 }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.dagProcessor.envFrom }}
+          envFrom: {{- toYaml .Values.dagProcessor.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             {{- include "custom_airflow_environment" . | indent 10 }}
             {{- include "standard_airflow_environment" . | indent 10 }}
@@ -180,7 +184,11 @@ spec:
             {{- if or .Values.dags.persistence.enabled .Values.dags.gitSync.enabled }}
               {{- include "airflow_dags_mount" . | nindent 12 }}
             {{- end }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.dagProcessor.envFrom }}
+          envFrom: {{- toYaml .Values.dagProcessor.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             {{- include "custom_airflow_environment" . | indent 10 }}
             {{- include "standard_airflow_environment" . | indent 10 }}
