@@ -48,7 +48,7 @@ metadata:
     tier: airflow
     component: worker
     release: {{ .Release.Name }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     heritage: {{ .Release.Service }}
     {{- with .Values.labels }}
       {{- toYaml . | nindent 4 }}
@@ -164,6 +164,9 @@ spec:
             - name: logs
               mountPath: {{ template "airflow_logs" . }}
             {{- include "airflow_config_mount" . | nindent 12 }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
             - name: config
               mountPath: {{ .Values.kerberos.configPath | quote }}
               subPath: krb5.conf
@@ -184,7 +187,11 @@ spec:
             {{- if or .Values.webserver.webserverConfig .Values.webserver.webserverConfigConfigMapName }}
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.workers.envFrom }}
+          envFrom: {{- toYaml .Values.workers.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             - name: KRB5_CONFIG
               value:  {{ .Values.kerberos.configPath | quote }}
@@ -201,6 +208,9 @@ spec:
           securityContext: {{ $containerSecurityContextWaitForMigrations | nindent 12 }}
           volumeMounts:
             {{- include "airflow_config_mount" . | nindent 12 }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
             {{- if .Values.volumeMounts }}
               {{- toYaml .Values.volumeMounts | nindent 12 }}
             {{- end }}
@@ -211,7 +221,11 @@ spec:
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
           args: {{- include "wait-for-migrations-command" . | indent 10 }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.workers.envFrom }}
+          envFrom: {{- toYaml .Values.workers.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             {{- include "custom_airflow_environment" . | indent 10 }}
             {{- include "standard_airflow_environment" . | indent 10 }}
@@ -269,6 +283,9 @@ spec:
             - name: logs
               mountPath: {{ template "airflow_logs" . }}
             {{- include "airflow_config_mount" . | nindent 12 }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
             {{- if .Values.kerberos.enabled }}
             - name: kerberos-keytab
               subPath: "kerberos.keytab"
@@ -288,7 +305,11 @@ spec:
             {{- if or .Values.webserver.webserverConfig .Values.webserver.webserverConfigConfigMapName }}
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.workers.envFrom }}
+          envFrom: {{- toYaml .Values.workers.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             # Only signal the main process, not the process group, to make Warm Shutdown work properly
             - name: DUMB_INIT_SETSID
@@ -336,6 +357,9 @@ spec:
             {{- if .Values.workers.extraVolumeMounts }}
               {{- tpl (toYaml .Values.workers.extraVolumeMounts) . | nindent 12 }}
             {{- end }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
             {{- if or .Values.webserver.webserverConfig .Values.webserver.webserverConfigConfigMapName }}
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
@@ -354,6 +378,9 @@ spec:
             - name: logs
               mountPath: {{ template "airflow_logs" . }}
             {{- include "airflow_config_mount" . | nindent 12 }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
             - name: config
               mountPath: {{ .Values.kerberos.configPath | quote }}
               subPath: krb5.conf
@@ -374,7 +401,11 @@ spec:
             {{- if or .Values.webserver.webserverConfig .Values.webserver.webserverConfigConfigMapName }}
               {{- include "airflow_webserver_config_mount" . | nindent 12 }}
             {{- end }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.workers.envFrom }}
+          envFrom: {{- toYaml .Values.workers.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env:
             - name: KRB5_CONFIG
               value:  {{ .Values.kerberos.configPath | quote }}
@@ -392,6 +423,9 @@ spec:
         {{- end }}
         {{- if .Values.workers.extraVolumes }}
           {{- tpl (toYaml .Values.workers.extraVolumes) . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.extraConfigMapsMounts }}
+          {{- include "airflow_extra_configmaps_mount" . | nindent 8 }}
         {{- end }}
         - name: config
           configMap:

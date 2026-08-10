@@ -29,7 +29,7 @@ metadata:
     tier: airflow
     component: worker-horizontalpodautoscaler
     release: {{ .Release.Name }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     heritage: {{ .Release.Service }}
     deploymentName: {{ .Release.Name }}-worker
     {{- if or (.Values.labels) (.Values.workers.labels) }}

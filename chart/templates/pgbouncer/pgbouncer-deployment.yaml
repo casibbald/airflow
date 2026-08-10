@@ -39,7 +39,7 @@ metadata:
     tier: airflow
     component: pgbouncer
     release: {{ .Release.Name }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     heritage: {{ .Release.Service }}
     {{- with .Values.labels }}
       {{- toYaml . | nindent 4 }}

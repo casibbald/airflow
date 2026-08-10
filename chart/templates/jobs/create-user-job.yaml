@@ -36,7 +36,7 @@ metadata:
     tier: airflow
     component: create-user-job
     release: {{ .Release.Name }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     heritage: {{ .Release.Service }}
     {{- with .Values.labels }}
       {{- toYaml . | nindent 4 }}
@@ -65,6 +65,8 @@ spec:
         {{- end }}
       {{- if or .Values.airflowPodAnnotations .Values.createUserJob.annotations }}
       annotations:
+        checksum/airflow-config: {{ include (print $.Template.BasePath "/configmaps/configmap.yaml") . | sha256sum }}
+        checksum/extra-configmaps: {{ include (print $.Template.BasePath "/configmaps/extra-configmaps.yaml") . | sha256sum }}
         {{- if .Values.airflowPodAnnotations }}
           {{- toYaml .Values.airflowPodAnnotations | nindent 8 }}
         {{- end }}
@@ -109,7 +111,11 @@ spec:
           args: {{ tpl (toYaml .Values.createUserJob.args) . | nindent 12 }}
           {{- end }}
           {{- if .Values.createUserJob.applyCustomEnv }}
-          envFrom: {{- include "custom_airflow_environment_from" . | default "\n  []" | indent 10 }}
+          {{- if .Values.createUserJob.envFrom }}
+          envFrom: {{- toYaml .Values.createUserJob.envFrom | nindent 10 }}
+          {{- else if $.Values.envFrom }}
+          envFrom: {{- toYaml $.Values.envFrom | nindent 10 }}
+          {{- end }}
           env: {{- include "custom_airflow_environment" . | indent 10 }}
           {{- else }}
           env:
@@ -125,10 +131,16 @@ spec:
             {{- if .Values.createUserJob.extraVolumeMounts }}
               {{- tpl (toYaml .Values.createUserJob.extraVolumeMounts) . | nindent 12 }}
             {{- end }}
+            {{- if .Values.extraConfigMapsMounts }}
+              {{- include "airflow_extra_configmaps_volume_mount" . | nindent 12 }}
+            {{- end }}
         {{- if .Values.createUserJob.extraContainers }}
           {{- tpl (toYaml .Values.createUserJob.extraContainers) . | nindent 8 }}
         {{- end }}
       volumes:
+        {{- if .Values.extraConfigMapsMounts }}
+          {{- include "airflow_extra_configmaps_mount" . | nindent 8 }}
+        {{- end }}
         - name: config
           configMap:
             name: {{ template "airflow_config" . }}
