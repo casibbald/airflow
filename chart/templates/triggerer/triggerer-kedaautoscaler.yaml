@@ -30,7 +30,7 @@ metadata:
     tier: airflow
     component: triggerer-horizontalpodautoscaler
     release: {{ .Release.Name }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     heritage: {{ .Release.Service }}
     deploymentName: {{ .Release.Name }}-triggerer
     {{- if or (.Values.labels) (.Values.triggerer.labels) }}

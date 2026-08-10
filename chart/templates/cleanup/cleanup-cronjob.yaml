@@ -34,7 +34,7 @@ metadata:
   labels:
     tier: airflow
     component: airflow-cleanup-pods
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     {{- with .Values.labels }}

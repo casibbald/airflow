@@ -51,7 +51,7 @@ metadata:
     tier: airflow
     component: scheduler
     release: {{ .Release.Name }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     heritage: {{ .Release.Service }}
     executor: {{ .Values.executor }}
     {{- with .Values.labels }}
